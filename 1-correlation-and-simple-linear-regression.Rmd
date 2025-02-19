@@ -1,0 +1,37 @@
+---
+title: "1. Correlation and simple linear regression"
+author: "Muhammad Uzair Davids"
+date: "2025-02-19"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Correlation
+
+
+
+Begin by loading the data:
+
+```{r load data}
+bag <- read.csv("data/bagasse.csv") # read the .csv and create a variable name
+bag # display data
+attach(bag) # allows R to access database by simply giving the variable name
+```
+
+Create a scatter plot:
+
+```{r scatter plot}
+plot(calories ~ water.content, xlab = "water content (%)",
+     ylab = "calories (kJ/g)", las = 1, pch = 16, data = bag)
+```
+
+Calculate the correlation coefficient between variables:
+
+```{r correlation}
+cor(calories, water.content) # calculate correlation coefficient 
+
+cor.test(calories, water.content) # test of significance
+```
