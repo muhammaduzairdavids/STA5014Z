@@ -1,5 +1,5 @@
 ---
-title: "1. Correlation and simple linear regression"
+title: "1. Correlation and Simple Linear Regression"
 author: "Muhammad Uzair Davids"
 date: "2025-02-19"
 output: html_document
@@ -9,24 +9,40 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Correlation
+# Correlation
 
+**Correlation (*r - sample correlation coefficient*)** is the measure of strength of *linear* relationships. It ranges between -1 and 1. When *r* is 1, this indicates a strong positive relationship, and when it is -1, this indicates a strong negative relationship. When *r* is 0, this means that there is *NO LINEAR* relationship, but it does not necessarily mean that there is no relationship - there may be a strong relationship, but if that relationship isn't linear, the *Pearson correlation coefficient (sample correlation coefficient)* won't be useful.
 
+The correlation coefficient can be very sensitive to outliers.
+
+*CORRELATION DOES NOT IMPLY CAUSATION*
+
+**Sample correlation (*p - Greek letter rho*)** is an estimate of the *true/population* correlation. 
 
 Begin by loading the data:
 
 ```{r load data}
-bag <- read.csv("data/bagasse.csv") # read the .csv and create a variable name
+bag <- read.csv("C:/Program Files/Git/STA5014Z/data/bagasse.csv") # read the .csv and create a variable name
 bag # display data
 attach(bag) # allows R to access database by simply giving the variable name
 ```
 
-Create a scatter plot:
+## Scatter plots
+
+Scatter plots are important are important tools for understanding the complete relationship between variables, whether linear or non-linear.
 
 ```{r scatter plot}
 plot(calories ~ water.content, xlab = "water content (%)",
      ylab = "calories (kJ/g)", las = 1, pch = 16, data = bag)
 ```
+
+The above scatter plot shows a negative linear relationship, this means that a correlation coefficient can be used for the data.  
+
+## Test of significance
+
+On its own, *correlation coefficients can be difficult to interpret*, since *it does not measure something we can understand*. So, we can do a *test of significance (`cor.test()`)*, which will attain the **p-value**.
+
+The **p-value** allows us to measure the evidence against the *null hypothesis (**H0 : rho = 0**)*. However, this test is dependent on sample size, and can only indicate whether there is some evidence for a relationship between variables. There are better ways (*R-squared and linear regression*) to understand the relationship between variables. If there is a *clear response variable* then it is better to *investigate how the response changes when the explanatory variable using regression*.
 
 Calculate the correlation coefficient between variables:
 
@@ -35,3 +51,12 @@ cor(calories, water.content) # calculate correlation coefficient
 
 cor.test(calories, water.content) # test of significance
 ```
+The above correlation coefficient *r = -0.99* indicates a very strong negative linear relationship between calories and water content - when water content increases, calories decrease. 
+
+The **small *p-value* (p < 0.05)** indicates **strong evidence against the null hypothesis**. 
+
+So we know that there water content and calories are corelated, but we don't know how. What is the rate of decrease in calorific content with increase water content? How much of the variability in calorific value is explained by water content? To get these answers, we need to use *linear regression*. 
+
+# Simple Linear Regression
+
+Simple linear regression involves fitting a line to our observed data. This line **describes the relationship between the response and the explanatory variable in the form of the following equation: *y = a + bx* **.The line is an **estimate of the true relationship with uncertainty**. Regression is used to **describe and understand relationships between variables**, **estimate parameters**, **estimate the response for explanatory variables not directly observed** and to **understand variability**. 

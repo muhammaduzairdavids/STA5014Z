@@ -13,7 +13,7 @@
 
 <meta name="date" content="2025-02-19" />
 
-<title>1. Correlation and simple linear regression</title>
+<title>1. Correlation and Simple Linear Regression</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -350,18 +350,32 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">1. Correlation and simple linear
-regression</h1>
+<h1 class="title toc-ignore">1. Correlation and Simple Linear
+Regression</h1>
 <h4 class="author">Muhammad Uzair Davids</h4>
 <h4 class="date">2025-02-19</h4>
 
 </div>
 
 
-<div id="correlation" class="section level2">
-<h2>Correlation</h2>
+<div id="correlation" class="section level1">
+<h1>Correlation</h1>
+<p><strong>Correlation (<em>r - sample correlation
+coefficient</em>)</strong> is the measure of strength of <em>linear</em>
+relationships. It ranges between -1 and 1. When <em>r</em> is 1, this
+indicates a strong positive relationship, and when it is -1, this
+indicates a strong negative relationship. When <em>r</em> is 0, this
+means that there is <em>NO LINEAR</em> relationship, but it does not
+necessarily mean that there is no relationship - there may be a strong
+relationship, but if that relationship isn’t linear, the <em>Pearson
+correlation coefficient (sample correlation coefficient)</em> won’t be
+useful.</p>
+<p>The correlation coefficient can be very sensitive to outliers.</p>
+<p><em>CORRELATION DOES NOT IMPLY CAUSATION</em></p>
+<p><strong>Sample correlation (<em>p - Greek letter rho</em>)</strong>
+is an estimate of the <em>true/population</em> correlation.</p>
 <p>Begin by loading the data:</p>
-<pre class="r"><code>bag &lt;- read.csv(&quot;data/bagasse.csv&quot;) # read the .csv and create a variable name
+<pre class="r"><code>bag &lt;- read.csv(&quot;C:/Program Files/Git/STA5014Z/data/bagasse.csv&quot;) # read the .csv and create a variable name
 bag # display data</code></pre>
 <pre><code>##     X water.content calories
 ## 1   1           6.3   18.201
@@ -399,10 +413,33 @@ bag # display data</code></pre>
 ## 33 33          61.0    7.523
 ## 34 34          61.7    7.378</code></pre>
 <pre class="r"><code>attach(bag) # allows R to access database by simply giving the variable name</code></pre>
-<p>Create a scatter plot:</p>
+<div id="scatter-plots" class="section level2">
+<h2>Scatter plots</h2>
+<p>Scatter plots are important are important tools for understanding the
+complete relationship between variables, whether linear or
+non-linear.</p>
 <pre class="r"><code>plot(calories ~ water.content, xlab = &quot;water content (%)&quot;,
      ylab = &quot;calories (kJ/g)&quot;, las = 1, pch = 16, data = bag)</code></pre>
 <p><img role="img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABUAAAAPACAMAAADDuCPrAAAA51BMVEUAAAAAADoAAGYAOjoAOmYAOpAAZrY6AAA6AGY6OgA6Ojo6OmY6ZmY6ZpA6ZrY6kLY6kNtmAABmADpmOgBmOjpmOmZmZjpmZmZmZpBmZrZmkJBmkLZmkNtmtrZmtttmtv+QOgCQOjqQZgCQZjqQZmaQkDqQkGaQkJCQkLaQtraQttuQ29uQ2/+2ZgC2Zjq2kDq2kGa2kJC2tpC2tra2ttu225C229u22/+2///bkDrbkGbbtmbbtpDbtrbbttvb25Db27bb29vb2//b/7bb/9vb////tmb/25D/27b/29v//7b//9v////k1A3PAAAACXBIWXMAAB2HAAAdhwGP5fFlAAAgAElEQVR4nO3de2MT176Y4XG4uIGaQuFsdptdoCXnstOIk5PskmhDepKcYgz29/881Yxuo4vF+OelNbOk5/kjsRVZWsHSy5rbUnUFQEjV9wAASiWgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQJKAAQQIKECSgAEECChAkoABBAgoQ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" width="672" /></p>
+<p>The above scatter plot shows a negative linear relationship, this
+means that a correlation coefficient can be used for the data.</p>
+</div>
+<div id="test-of-significance" class="section level2">
+<h2>Test of significance</h2>
+<p>On its own, <em>correlation coefficients can be difficult to
+interpret</em>, since <em>it does not measure something we can
+understand</em>. So, we can do a <em>test of significance
+(<code>cor.test()</code>)</em>, which will attain the
+<strong>p-value</strong>.</p>
+<p>The <strong>p-value</strong> allows us to measure the evidence
+against the <em>null hypothesis (<strong>H0 : rho = 0</strong>)</em>.
+However, this test is dependent on sample size, and can only indicate
+whether there is some evidence for a relationship between variables.
+There are better ways (<em>R-squared and linear regression</em>) to
+understand the relationship between variables. If there is a <em>clear
+response variable</em> then it is better to <em>investigate how the
+response changes when the explanatory variable using
+regression</em>.</p>
 <p>Calculate the correlation coefficient between variables:</p>
 <pre class="r"><code>cor(calories, water.content) # calculate correlation coefficient </code></pre>
 <pre><code>## [1] -0.9852313</code></pre>
@@ -418,6 +455,29 @@ bag # display data</code></pre>
 ## sample estimates:
 ##        cor 
 ## -0.9852313</code></pre>
+<p>The above correlation coefficient <em>r = -0.99</em> indicates a very
+strong negative linear relationship between calories and water content -
+when water content increases, calories decrease.</p>
+<p>The <strong>small <em>p-value</em> (p &lt; 0.05)</strong> indicates
+<strong>strong evidence against the null hypothesis</strong>.</p>
+<p>So we know that there water content and calories are corelated, but
+we don’t know how. What is the rate of decrease in calorific content
+with increase water content? How much of the variability in calorific
+value is explained by water content? To get these answers, we need to
+use <em>linear regression</em>.</p>
+</div>
+</div>
+<div id="simple-linear-regression" class="section level1">
+<h1>Simple Linear Regression</h1>
+<p>Simple linear regression involves fitting a line to our observed
+data. This line <strong>describes the relationship between the response
+and the explanatory variable in the form of the following equation:
+<em>y = a + bx</em> </strong>.The line is an <strong>estimate of the
+true relationship with uncertainty</strong>. Regression is used to
+<strong>describe and understand relationships between
+variables</strong>, <strong>estimate parameters</strong>,
+<strong>estimate the response for explanatory variables not directly
+observed</strong> and to <strong>understand variability</strong>.</p>
 </div>
 
 
