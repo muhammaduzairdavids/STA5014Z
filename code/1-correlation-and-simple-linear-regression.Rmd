@@ -55,8 +55,45 @@ The above correlation coefficient *r = -0.99* indicates a very strong negative l
 
 The **small *p-value* (p < 0.05)** indicates **strong evidence against the null hypothesis**. 
 
-So we know that there water content and calories are corelated, but we don't know how. What is the rate of decrease in calorific content with increase water content? How much of the variability in calorific value is explained by water content? To get these answers, we need to use *linear regression*. 
+So we know that there water content and calories are correlated, but we don't know how. What is the rate of decrease in calorific content with increase water content? How much of the variability in calorific value is explained by water content? To get these answers, we need to use *linear regression*. 
 
 # Simple Linear Regression
 
-Simple linear regression involves fitting a line to our observed data. This line **describes the relationship between the response and the explanatory variable in the form of the following equation: *y = a + bx* **.The line is an **estimate of the true relationship with uncertainty**. Regression is used to **describe and understand relationships between variables**, **estimate parameters**, **estimate the response for explanatory variables not directly observed** and to **understand variability**. 
+Simple linear regression involves fitting a line to our observed data. This line **describes the relationship between the response and the explanatory variable in the form of the following equation:** 
+
+*y = a + bx* OR response = a + b(predictor)
+
+The line is an **estimate of the true relationship with uncertainty**. Regression is used to **describe and understand relationships between variables**, **estimate parameters**, **estimate the response for explanatory variables not directly observed** and to **understand variability**. 
+
+Create the model using the following code:
+`model <- lm(reponse variable ~ predictor variable)`
+
+```{r linear regression model}
+model1 <- lm(calories ~ water.content) # Create the model
+summary(model1) # Summarises model 
+```
+### *1. Interpret the coefficient estimates*
+
+The estimate of the intercept (Beta 0) is 19.16, and the slope estimate (Beta 1) is -0.19. So our regression equation is: 
+
+*y = 19.16 - 0.19 x `water.content`* (y should be written with a hat to denote an estimate of y/the calorific value in this case).
+
+The above equation tells us that if water content increases by 1%, the average calorific value decreases by 0.19kJ/g, and this rate of change is constant since it is linear. The intercept at 19.16, is the average calorific value when `water.content` = 0.
+
+The coefficients also have **standard errors**. This is a **measure of precision of the estimate**. The more information we have, the better the precision. A **small standard error** means that our estimate is close to the true value, and vice versa.
+
+### *2. Hypothesis test* 
+
+*t-value* is the test statistic in a *t-test*, and it **measures how far the observed value is from 0 (H0 = TRUE)**. If H0 is true, then **t-value < 2**.
+
+The *p-value* (`Pr(>|t|)`) is a **measure of this distance between the observed value compared to the null hypothesis**. A **small p-value (p < 0.05)** indicates **strong evidence against H0**, and vice versa.
+
+The p and t values help to check if there is evidence in the data for a relationship. Relationships NOT supported by data should NOT be interpreted. 
+
+## Model checking
+
+```{r checking our model}
+ml <- lm(y ~ x)
+summary(ml)
+```
+
