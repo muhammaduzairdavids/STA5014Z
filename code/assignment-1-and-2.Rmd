@@ -1,0 +1,220 @@
+---
+title: "Angulate Tortoise Data Assignments"
+author: "Muhammad Uzair Davids"
+date: "2025-03-15"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load packages
+```{r}
+library(readxl)
+library(ggplot2)
+library(visreg) #  check whether patterns in the data are properly described by the model
+```
+
+
+## Load data
+```{r}
+tortoise <- read_excel("C:/Program Files/Git/STA5014Z/data/tortoise.data.xls")
+```
+
+# ASSIGNMENT 1
+## QUESTION 1: Scatter plot
+```{r}
+# Select columns 5 to 11
+tort <- tortoise[, 5:11]
+
+# Generate scatterplot matrix
+pairs(tort, main = "Scatterplot Matrix of Tortoise Measurements")
+```
+From the scatter plots we see that there are outliers present in the data. 
+
+## QUESTION 2
+Length seems to be least strongly correlated with weight.
+
+```{r}
+# Deleting some data points
+tort2 <- tort # copy data frame to tort2
+ tort2 <- tort2[tort2$`Mid width` < 600,] # only those rows where mid-width < 600
+ tort2 <- tort2[tort2$`Rear width` < 200,]
+ tort2 <- tort2[tort2$`Curved width` > 100,]
+ tort2 <- tort2[tort2$`Gular length` < 100,]
+ tort2 <- tort2[tort2$`Plastron length` < 180,]
+ 
+# Plot again
+pairs(tort2, main = "Adjusted Scatterplot Matrix of Tortoise Measurements")
+```
+
+## QUESTION 3
+After removing the outliers, it seems that Gular length is the least strongly
+correlated.
+
+```{r}
+tort_cor <- round(cor(tort), 2)
+tort_cor
+
+# Load necessary library
+library(ggcorrplot)
+
+# Compute Pearson's correlation matrix
+cor_matrix <- cor(tort, use = "complete.obs", method = "pearson")
+
+# Print correlation matrix
+print(cor_matrix)
+
+# Visualize correlation matrix
+ggcorrplot(cor_matrix, method = "circle", type = "lower", lab = TRUE, title = "Pearson Correlation Matrix")
+
+```
+
+## QUESTION 4
+
+From the above, we see that mid width is the least strongly correlated.
+
+```{r}
+ tort3 <- tortoise[tortoise$Sex == "M" | tortoise$Sex == "F", ]
+ tort3$Sex <- factor(tort3$Sex)
+ 
+range <-  range(tort3$Weight)
+range
+```
+
+## QUESTION 5
+Therefore, the range is 584g to 1657g.
+
+```{r}
+ggplot(tort3, aes(x = Sex, y = Weight, fill = Sex)) +
+  geom_boxplot() +
+  labs(title = "Comparison of Weight Between Male and Female Tortoises",
+       x = "Sex",
+       y = "Weight") +
+  theme_minimal()
+```
+
+The median weight of males is greater than females, and there is greater 
+variance in males.
+
+```{r}
+# Convert Sex to a factor and ensure "M" comes first
+tort3$Sex <- factor(tort3$Sex, levels = c("M", "F"))
+
+t <- t.test(Weight ~ Sex, data = tort3, var.equal = FALSE)
+t
+
+ci_lower <- round(t$conf.int[1])
+ci_upper <- round(t$conf.int[2])
+
+# Extract confidence interval and round to nearest gram
+if (t$estimate["mean in group M"] < t$estimate["mean in group F"]) {
+  ci_lower <- -ci_lower
+  ci_upper <- -ci_upper
+}
+
+# Print the confidence interval
+cat("95% Confidence Interval for the Difference (Males - Females): [", ci_lower, ",", ci_upper, "] grams\n")
+```
+The confidence intervals are 88 and 179g, and the small p-value indicates 
+strong evidence against the null hypothesis. 
+
+```{r}
+m1 <- lm(`Weight` ~ `Mid width`, data = tort3)
+summary(m1)
+```
+
+The slope coefficient = -0.05 which indicates a weak negative relationship, but 
+the p-value of 0.71 which is greater than 0.05 means that there is weak evidence
+to support the alternative hypothesis. 
+
+```{r}
+m2 <- lm(`Weight` ~ `Length`, data = tort3)
+summary(m2)
+```
+
+```{r}
+# Predict the weight for a tortoise with length 200 mm, and get the confidence interval
+prediction <- predict(m2, newdata = data.frame(Length = 200), 
+                      interval = "confidence", level = 0.95)
+print(prediction)
+
+
+# Predict the weight for a tortoise with length 180 mm, and get the confidence interval
+prediction2 <- predict(m2, newdata = data.frame(Length = 180), 
+                       interval = "confidence", level = 0.95)
+print(prediction2)
+```
+
+# ASSIGNMENT 2
+## QUESTION 1: Multiple linear regression models
+Fit the tortoise data to a multiple linear regression model.
+
+```{r}
+multi_m1 <- lm(`Weight` ~ `Length` + `Curved width`, data = tort3)
+summary(multi_m1)
+```
+
+The above shows us that the regression coefficient estimates are partial 
+regression coefficients.
+
+## QUESTION 2
+
+These coefficients tell us how much `Weight` changes with a change in each 
+variable, assuming that we keep other variables constant.
+
+
+## QUESTION 3
+
+Find the median of `Length` and `Curved width` and predict the `Weight` of a 
+tortoise with this `Length` and `Curved width`.
+
+```{r}
+# Length summary
+summary(tort3$Length)
+
+# Curved width summary
+summary(tort3$`Curved width`)
+
+# Predict with these values
+y <- -739.2003 + 6.9667 * (192.0)  + 2.1193 * (216.0)
+y
+```
+
+## QUESTION 4
+
+Calculate the 95% CI for the effect of `Length` on `Weight`.
+
+
+```{r}
+confint(multi_m1)
+```
+
+## QUESTION 5
+Check the model.
+
+```{r}
+# Partial plots
+par(mfrow = c(1,2))
+cex.lab <- 2.5
+cex.axis <- 1.8
+par(mar = c(5,6,1,0))
+
+# Length plot
+visreg(multi_m1, "Length", line = list(col = "blue"), 
+       points = list(cex = 1, pch = 16, col = 1), 
+       ylab = "", xlab = "Length", cex.lab = cex.lab, cex.axis = cex.axis)
+
+mtext("Weight", side = 2, line = 3.5, cex = cex.lab)
+
+par(mar = c(5,3,1,3))
+
+# Curved width plot
+visreg(multi_m1, `Curved width`, line = list(col = "red"), 
+       points = list(cex = 1, pch = 16, col = 1), 
+       xlab = "Curved width", yaxt = "n", 
+       ylab = "", cex.lab = cex.lab, cex.axis = cex.axis)
+```
+
+
