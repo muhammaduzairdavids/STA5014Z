@@ -11,7 +11,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Load packages
 ```{r}
-library(readxl)
 library(ggplot2)
 library(visreg) #  check whether patterns in the data are properly described by the model
 ```
@@ -19,7 +18,7 @@ library(visreg) #  check whether patterns in the data are properly described by 
 
 ## Load data
 ```{r}
-tortoise <- read_excel("C:/Program Files/Git/STA5014Z/data/tortoise.data.xls")
+tortoise <- read.csv("C:/Program Files/Git/STA5014Z/data/tortoise.data.csv")
 ```
 
 # ASSIGNMENT 1
